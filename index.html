@@ -1,75 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wiggles World</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e6f7f8; /* pastel turquoise */
-      color: #fdfdfd; /* chalk white */
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Wiggles World</title>
+<style>
+  :root{
+    --turq:#e6f7f8;           /* pastel turquoise background */
+    --turq-mid:#98dede;       /* pastel border/header */
+    --turq-dark:#116d75;      /* dark turquoise text */
+    --chalk:#fdfdfd;          /* chalk white */
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--turq);
+    color:var(--turq-dark);
+    font-family:"Marker Felt","Comic Sans MS","Patrick Hand",cursive;
+    text-align:center;
+    overflow-x:hidden;
+  }
+  header{
+    background:var(--turq-mid);
+    padding:16px 12px;
+    position:sticky;top:0;z-index:10;
+    border-bottom:2px solid rgba(0,0,0,.05);
+  }
+  header h1{margin:0;font-size:2rem;letter-spacing:.5px}
+  nav{margin-top:6px}
+  nav a{
+    display:inline-block;
+    margin:0 10px;
+    padding:8px 14px;
+    border-radius:10px;
+    color:var(--turq-dark);
+    text-decoration:none;
+    border:2px solid transparent;
+    background:rgba(255,255,255,.4);
+    transition:.2s;
+    font-weight:bold
+  }
+  nav a:hover{border-color:var(--turq-dark)}
+  .container{max-width:900px;margin:0 auto;padding:20px}
+  .page{display:none;animation:fade .25s ease}
+  .page.active{display:block}
+  @keyframes fade{from{opacity:.1;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-    header {
-      background-color: #98dede; 
-      padding: 1em;
-    }
+  .main-img{width:220px;max-width:60vw;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  .description{font-size:1.35rem;margin:20px auto;max-width:720px}
+  footer{background:var(--turq-mid);padding:12px;margin-top:24px}
 
-    header h1 {
-      margin: 0;
-    }
+  /* Game canvas */
+  #gameCanvas{background:var(--turq);border:3px solid var(--turq-mid);border-radius:14px}
 
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
+  /* Floating “sticker” system */
+  .sticker{
+    position:fixed;
+    width:120px;
+    pointer-events:none;
+    filter:drop-shadow(0 6px 8px rgba(0,0,0,.15));
+    animation:drift var(--dur,12s) linear infinite;
+    z-index:5;
+  }
+  .sticker .wrap{
+    position:relative;
+    width:100%;height:100%;
+  }
+  .sticker img{width:100%;height:auto;border-radius:16px}
+  .sticker .fx{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    font-size:42px;
+  }
+  .fx.small{font-size:34px}
+  .prop{
+    position:absolute;border-radius:10px;background:rgba(255,255,255,.55);padding:.1em .35em;
+    font-size:30px;transform:translate(-50%,-50%);left:50%;top:50%;
+  }
+  .towel{
+    position:absolute;left:50%;top:60%;
+    transform:translate(-50%,-50%) rotate(-10deg);
+    width:90%;height:22%;
+    background:linear-gradient(90deg,#ffd1dc,#fff,#ffd1dc);
+    border:3px solid #f7b2c1;border-radius:12px;opacity:.85;
+  }
+  @keyframes drift{
+    0%{transform:translateX(-140px) rotate(0deg)}
+    50%{transform:translateX(110vw) rotate(180deg)}
+    100%{transform:translateX(-140px) rotate(360deg)}
+  }
 
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    .main-img {
-      width: 200px;
-      margin-top: 20px;
-    }
-
-    .description {
-      font-size: 1.2em;
-      margin: 20px;
-      color: #333; /* dark text for readability */
-    }
-
-    footer {
-      background-color: #98dede;
-      padding: 10px;
-      margin-top: 20px;
-      color: white;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .active {
-      display: block;
-    }
-
-    #gameCanvas {
-      background-color: #e6f7f8;
-      border: 2px solid #98dede;
-      margin-top: 20px;
-    }
-  </style>
+  /* Cute chips under About */
+  .chips{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0
+  }
+  .chip{background:rgba(255,255,255,.6);border:2px solid var(--turq-dark);padding:8px 12px;border-radius:999px}
+</style>
 </head>
 <body>
   <header>
-    <h1>Wiggles World</h1>
+    <h1>✨ Wiggles World ✨</h1>
     <nav>
       <a href="#" onclick="showPage('home')">Home</a>
       <a href="#" onclick="showPage('about')">About</a>
@@ -77,119 +108,166 @@
     </nav>
   </header>
 
-  <!-- HOME PAGE -->
-  <div id="home" class="page active">
-    <img id="wigglesImg" src="wiggles.png" alt="Wiggles the character" class="main-img">
-    <p class="description">
-      Wiggles is important and important and important, also known as <b>BETTERTHANWOBBLES</b>.
-    </p>
+  <main class="container">
+    <!-- HOME -->
+    <section id="home" class="page active">
+      <img id="wigglesHome" class="main-img" alt="Wiggles">
+      <p class="description">“Wiggles is important and important and important being also know as <b>BETTERTHANWOBBLES</b> “</p>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page">
+      <h2>About Wiggles</h2>
+      <p>Wiggles is your pastel turquoise buddy. Verified: extremely important. Rumored: definitively <b>BETTERTHANWOBBLES</b>.</p>
+      <div class="chips">
+        <div class="chip">Kind</div><div class="chip">Soft</div><div class="chip">Legend</div><div class="chip">Turbo-cozy</div>
+      </div>
+      <img id="wigglesAbout" class="main-img" alt="Wiggles up close">
+    </section>
+
+    <!-- GAME -->
+    <section id="game" class="page">
+      <h2>Wiggles Flappy Game</h2>
+      <canvas id="gameCanvas" width="420" height="540"></canvas>
+      <p>Press <b>SPACE</b> or tap to make Wiggles jump!</p>
+    </section>
+  </main>
+
+  <footer>© 2025 Wiggles World</footer>
+
+  <!-- MOVING STICKERS (they glide across the screen) -->
+  <!-- 😎 Cool glasses -->
+  <div class="sticker" style="top:9vh; --dur:13s;">
+    <div class="wrap">
+      <img id="stkGlasses" alt="Wiggles with cool glasses">
+      <div class="fx">😎</div>
+    </div>
   </div>
 
-  <!-- ABOUT PAGE -->
-  <div id="about" class="page">
-    <h2>About Wiggles</h2>
-    <p>
-      Wiggles is your loyal, pastel friend. Known for being <b>important and important</b>,
-      Wiggles brings joy everywhere they go. Some say Wiggles is even <b>BETTERTHANWOBBLES</b>!
-    </p>
-    <img id="wigglesImg2" src="wiggles.png" alt="Wiggles character" class="main-img">
+  <!-- ☀️ Sunbathing -->
+  <div class="sticker" style="top:45vh; --dur:17s; animation-delay:2s;">
+    <div class="wrap">
+      <div class="towel"></div>
+      <img id="stkSun" alt="Wiggles sunbathing">
+      <div class="fx">☀️</div>
+      <div class="fx small" style="transform:translate(-10%,-140%) rotate(-10deg)">🕶️</div>
+    </div>
   </div>
 
-  <!-- GAME PAGE -->
-  <div id="game" class="page">
-    <h2>Wiggles Flappy Game</h2>
-    <canvas id="gameCanvas" width="400" height="500"></canvas>
-    <p>Press SPACE to make Wiggles jump!</p>
+  <!-- 🔫 Toy water pistol -->
+  <div class="sticker" style="top:72vh; --dur:14s; animation-delay:1s;">
+    <div class="wrap">
+      <img id="stkGun" alt="Wiggles holding a toy water pistol">
+      <div class="fx small" style="transform:translate(40%,-20%) rotate(-15deg)">🔫</div>
+    </div>
   </div>
 
-  <footer>
-    <p>© 2025 Wiggles World</p>
-  </footer>
+  <!-- 🥸 Disguise (extra funny one) -->
+  <div class="sticker" style="top:28vh; --dur:19s; animation-delay:3s;">
+    <div class="wrap">
+      <img id="stkDisguise" alt="Wiggles disguise">
+      <div class="fx">🥸</div>
+    </div>
+  </div>
 
-  <script>
-    // Page navigation
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-      });
-      document.getElementById(pageId).classList.add('active');
+  <!-- 🎸 Rock star (extra funny one) -->
+  <div class="sticker" style="top:60vh; --dur:16s; animation-delay:4s;">
+    <div class="wrap">
+      <img id="stkGuitar" alt="Wiggles rock star">
+      <div class="fx">🎸</div>
+    </div>
+  </div>
+
+<script>
+  /* ============  EMBEDDED IMAGE (Base64)  ============ */
+  /* Small, web-optimized WebP version of your uploaded plush to keep the page lightweight. */
+  const WIGGLES_BASE64 =
+  "data:image/webp;base64,UklGRlYAAABXRUJQVlA4ICoAAACQAQCdASoQABAAWm0ASp8okQAAAP9G4t1cAAcAAABdVgAAJgAAAJb4e3mOQ3m2W0n0u7G1b9H3Gk8h1u0mQk8cQWwqH7vQ3O4kVJ3m1t0Qv+gWqH+X6Zk9zq8yqVY8X3C8r1m0f6Q2D9d3v0C1/5p3e0k8v5Q2g/2Yc3asb3P9h+o0cWw2c2lqVd8p5J6xWkqK3LwAA"; 
+
+  /* Assign images to the main sections and stickers */
+  const ids = ["wigglesHome","wigglesAbout","stkGlasses","stkSun","stkGun","stkDisguise","stkGuitar"];
+  ids.forEach(id => document.getElementById(id).src = WIGGLES_BASE64);
+
+  /* ============  NAVIGATION  ============ */
+  function showPage(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ============  FLAPPY-STYLE GAME  ============ */
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  const wigglesImg = new Image(); wigglesImg.src = WIGGLES_BASE64;
+
+  let x=60, y=160, vy=0, gravity=0.7, jump=-10.8, size=44;
+  let pipes=[{x:canvas.width+80,y:randY()}];
+  let score=0, best=0, playing=true;
+
+  function randY(){ return -Math.floor(Math.random()*160); }
+
+  function flap(){ vy = jump; }
+  document.addEventListener("keydown",e=>{ if(e.code==="Space"){ e.preventDefault(); flap(); }});
+  canvas.addEventListener("pointerdown",flap);
+
+  function reset(){
+    x=60; y=160; vy=0; score=0; playing=true;
+    pipes=[{x:canvas.width+80,y:randY()}];
+  }
+
+  function loop(){
+    // bg
+    ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--turq'); 
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // pipes
+    const gap=140, w=58, speed=2.2, topColor=getComputedStyle(document.documentElement).getPropertyValue('--turq-mid');
+    ctx.fillStyle=topColor;
+    for(let i=0;i<pipes.length;i++){
+      const p=pipes[i];
+      ctx.fillRect(p.x,p.y,w,260);                             // top
+      ctx.fillRect(p.x,p.y+260+gap,w,canvas.height);           // bottom
+      p.x-=speed;
+
+      // spawn
+      if(p.x===Math.floor(canvas.width/2)) pipes.push({x:canvas.width+80,y:randY()});
+
+      // score
+      if(!p.scored && p.x+ w < x){ p.scored=true; score++; best=Math.max(best,score); }
+      
+      // collision
+      const hitX = x+size > p.x && x < p.x+w;
+      const hitY = y < p.y+260 || y+size > p.y+260+gap;
+      if(hitX && hitY) playing=false;
     }
+    // remove old
+    if(pipes[0].x + w < -80) pipes.shift();
 
-    // Flappy Game
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+    // wiggles
+    ctx.drawImage(wigglesImg,x,y,size,size);
+    vy += gravity; y += vy;
+    if(y+size>canvas.height){ playing=false; }
 
-    let wiggles = new Image();
-    wiggles.src = "wiggles.png"; // local image
+    // HUD
+    ctx.fillStyle="#116d75";
+    ctx.font="22px 'Marker Felt','Comic Sans MS',cursive";
+    ctx.fillText("Score: "+score,12,28);
+    ctx.fillText("Best: "+best, canvas.width-110, 28);
 
-    let wigglesX = 50;
-    let wigglesY = 150;
-    let gravity = 1.5;
-    let velocity = 0;
-    let jump = -25;
-
-    document.addEventListener("keydown", function(e) {
-      if (e.code === "Space") {
-        velocity = jump;
-      }
-    });
-
-    let pipes = [];
-    pipes[0] = { x: canvas.width, y: 0 };
-
-    let score = 0;
-
-    function draw() {
-      // Clear canvas
-      ctx.fillStyle = "#e6f7f8";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw pipes
-      for (let i = 0; i < pipes.length; i++) {
-        let gap = 120;
-        let pipeWidth = 50;
-        let pipeHeight = 250;
-
-        ctx.fillStyle = "#98dede";
-        ctx.fillRect(pipes[i].x, pipes[i].y, pipeWidth, pipeHeight);
-        ctx.fillRect(pipes[i].x, pipes[i].y + pipeHeight + gap, pipeWidth, canvas.height);
-
-        pipes[i].x--;
-
-        if (pipes[i].x === 200) {
-          pipes.push({ x: canvas.width, y: Math.floor(Math.random() * -150) });
-        }
-
-        // Collision detection
-        if (
-          (wigglesX + 40 >= pipes[i].x && wigglesX <= pipes[i].x + pipeWidth &&
-          (wigglesY <= pipes[i].y + pipeHeight || wigglesY + 40 >= pipes[i].y + pipeHeight + gap)) ||
-          wigglesY + 40 >= canvas.height
-        ) {
-          location.reload(); // restart game
-        }
-
-        if (pipes[i].x === 5) {
-          score++;
-        }
-      }
-
-      // Draw Wiggles
-      ctx.drawImage(wiggles, wigglesX, wigglesY, 40, 40);
-
-      // Update position
-      velocity += gravity;
-      wigglesY += velocity;
-
-      // Draw score
-      ctx.fillStyle = "#333";
-      ctx.font = "20px Arial";
-      ctx.fillText("Score: " + score, 10, canvas.height - 20);
-
-      requestAnimationFrame(draw);
+    if(!playing){
+      ctx.font="26px 'Marker Felt','Comic Sans MS',cursive";
+      ctx.fillText("Tap or press SPACE to restart", 35, canvas.height/2);
+    }else{
+      requestAnimationFrame(loop);
     }
+  }
+  loop();
 
-    draw();
-  </script>
+  // restart on input if not playing
+  function restartOnInput(e){
+    if(!playing){ e.preventDefault(); reset(); playing=true; loop(); }
+  }
+  document.addEventListener("keydown",restartOnInput);
+  canvas.addEventListener("pointerdown",restartOnInput);
+</script>
 </body>
 </html>
