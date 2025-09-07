@@ -42,12 +42,14 @@
     .description {
       font-size: 1.2em;
       margin: 20px;
+      color: #333; /* dark text for readability */
     }
 
     footer {
       background-color: #98dede;
       padding: 10px;
       margin-top: 20px;
+      color: white;
     }
 
     .page {
@@ -77,9 +79,9 @@
 
   <!-- HOME PAGE -->
   <div id="home" class="page active">
-    <img src="wiggles.png" alt="Wiggles the character" class="main-img">
+    <img id="wigglesImg" src="wiggles.png" alt="Wiggles the character" class="main-img">
     <p class="description">
-      Wiggles is important and important and important being also know as <b>BETTERTHANWOBBLES</b>.
+      Wiggles is important and important and important, also known as <b>BETTERTHANWOBBLES</b>.
     </p>
   </div>
 
@@ -90,7 +92,7 @@
       Wiggles is your loyal, pastel friend. Known for being <b>important and important</b>,
       Wiggles brings joy everywhere they go. Some say Wiggles is even <b>BETTERTHANWOBBLES</b>!
     </p>
-    <img src="wiggles.png" alt="Wiggles character" class="main-img">
+    <img id="wigglesImg2" src="wiggles.png" alt="Wiggles character" class="main-img">
   </div>
 
   <!-- GAME PAGE -->
@@ -118,7 +120,7 @@
     const ctx = canvas.getContext("2d");
 
     let wiggles = new Image();
-    wiggles.src = "wiggles.png"; // change this to your image file
+    wiggles.src = "wiggles.png"; // local image
 
     let wigglesX = 50;
     let wigglesY = 150;
@@ -138,9 +140,11 @@
     let score = 0;
 
     function draw() {
+      // Clear canvas
       ctx.fillStyle = "#e6f7f8";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Draw pipes
       for (let i = 0; i < pipes.length; i++) {
         let gap = 120;
         let pipeWidth = 50;
@@ -156,6 +160,7 @@
           pipes.push({ x: canvas.width, y: Math.floor(Math.random() * -150) });
         }
 
+        // Collision detection
         if (
           (wigglesX + 40 >= pipes[i].x && wigglesX <= pipes[i].x + pipeWidth &&
           (wigglesY <= pipes[i].y + pipeHeight || wigglesY + 40 >= pipes[i].y + pipeHeight + gap)) ||
@@ -169,11 +174,14 @@
         }
       }
 
+      // Draw Wiggles
       ctx.drawImage(wiggles, wigglesX, wigglesY, 40, 40);
 
+      // Update position
       velocity += gravity;
       wigglesY += velocity;
 
+      // Draw score
       ctx.fillStyle = "#333";
       ctx.font = "20px Arial";
       ctx.fillText("Score: " + score, 10, canvas.height - 20);
